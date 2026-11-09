@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SaaSForge - Production Micro-SaaS Directory</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-dark: #070a12;
+            --bg-card: rgba(17, 24, 39, 0.92);
+            --bg-card-hover: rgba(31, 41, 55, 0.98);
+            --cyan-glow: #00f2fe;
+            --blue-glow: #4facfe;
+            --purple-glow: #9d4edd;
+            --border-subtle: rgba(255, 255, 255, 0.12);
+            --border-glow: rgba(0, 242, 254, 0.5);
+            --text-primary: #ffffff;
+            --text-muted: #94a3b8;
+        }
+
+        body {
+            background-color: var(--bg-dark) !important;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(0, 242, 254, 0.1) 0px, transparent 40%),
+                radial-gradient(at 100% 100%, rgba(157, 78, 221, 0.1) 0px, transparent 40%);
+            color: var(--text-primary) !important;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            min-height: 100vh;
+            padding-bottom: 60px;
+            overflow-x: hidden;
+        }
+
+        /* Navbar Styling */
+        .navbar-custom {
+            background: rgba(7, 10, 18, 0.95);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        /* Hero Shimmer Title Animation */
+        .gradient-headline {
+            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #9d4edd 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: textShimmer 6s linear infinite;
+        }
+
+        @keyframes textShimmer {
+            to { background-position: 200% center; }
+        }
+
+        /* Interactive Search Input */
+        .search-bar {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid var(--border-subtle) !important;
+            color: #ffffff !important;
+            border-radius: 14px !important;
+            padding: 14px 20px !important;
+            font-size: 0.95rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .search-bar::placeholder {
+            color: #64748b !important;
+        }
+
+        .search-bar:focus {
+            background: rgba(255, 255, 255, 0.08) !important;
+            border-color: var(--cyan-glow) !important;
+            box-shadow: 0 0 25px rgba(0, 242, 254, 0.35) !important;
+            transform: scale(1.01);
+        }
+
+        /* Filter Pills */
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+            border: 1px solid var(--border-subtle);
+            border-radius: 30px;
+            padding: 7px 18px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .filter-btn.active, .filter-btn:hover {
+            background: linear-gradient(135deg, var(--cyan-glow), var(--blue-glow));
+            color: #030712;
+            border-color: transparent;
+            font-weight: 700;
+            box-shadow: 0 0 18px rgba(0, 242, 254, 0.45);
+            transform: translateY(-2px);
+        }
+
+        /* Card Entrance Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Directory Card Layout & Hover Effects */
+        .dir-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 18px;
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            animation: fadeInUp 0.45s ease forwards;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .dir-card:hover {
+            background: var(--bg-card-hover);
+            transform: translateY(-8px) scale(1.01);
+            border-color: var(--cyan-glow);
+            box-shadow: 0 18px 36px rgba(0, 242, 254, 0.2), 0 0 15px rgba(157, 78, 221, 0.15);
+        }
+
+        /* Tech Tag Badges */
+        .badge-tech {
+            background: rgba(255, 255, 255, 0.06);
+            color: #cbd5e1;
+            font-size: 0.72rem;
+            border-radius: 6px;
+            padding: 4px 9px;
+            margin-right: 4px;
+            margin-bottom: 6px;
+            display: inline-block;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.2s ease;
+        }
+
+        .badge-tech:hover {
+            background: rgba(0, 242, 254, 0.15);
+            color: var(--cyan-glow);
+            border-color: rgba(0, 242, 254, 0.3);
+        }
+
+        /* Primary Action Buttons */
+        .btn-inspect {
+            background: linear-gradient(135deg, var(--cyan-glow), var(--blue-glow));
+            color: #030712;
+            font-weight: 700;
+            border-radius: 10px;
+            border: none;
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            transition: all 0.25s ease;
+        }
+
+        .btn-inspect:hover {
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.6);
+            transform: scale(1.04);
+            color: #000;
+        }
+
+        /* Interactive Modal Animation */
+        .modal-content {
+            background: #0d1322 !important;
+            border: 1px solid var(--cyan-glow) !important;
+            border-radius: 20px !important;
+            color: #ffffff !important;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8);
+            animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes modalPop {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Glass Navbar -->
+    <nav class="navbar navbar-dark navbar-custom sticky-top py-3">
+        <div class="container">
+            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="#">
+                <span style="color: var(--cyan-glow); font-size: 1.4rem;">⚡</span>
+                <span class="fs-5">SaaSForge</span>
+            </a>
+            <div class="d-flex align-items-center gap-2">
+                <button class="btn btn-sm btn-outline-info rounded-pill px-3" onclick="toggleFavoritesOnly()" id="favToggleBtn">
+                    ❤️ Saved (<span id="favCount">0</span>)
+                </button>
+                <button class="btn btn-sm btn-info rounded-pill px-3 fw-bold" data-bs-toggle="modal" data-bs-target="#submitModal">
+                    + Submit Kit
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Header -->
+    <header class="container text-center py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 mb-3 rounded-pill px-3 py-2">
+                    🚀 100% Production-Ready SaaS Architecture
+                </span>
+                <h1 class="display-5 fw-bold mb-3">Launch Your Micro-SaaS <br><span class="gradient-headline">10x Faster</span></h1>
+                <p class="text-secondary lead fs-6 mb-4">Discover verified boilerplates with pre-configured Auth, Stripe billing, and database infrastructure.</p>
+
+                <!-- Search Input Bar -->
+                <input type="text" id="searchInput" class="form-control search-bar mb-4" placeholder="Search by name, feature (Stripe, Auth), or tech stack..." onkeyup="renderDirectory()">
+
+                <!-- Category Filter Pills -->
+                <div class="d-flex flex-wrap justify-content-center gap-2" id="filterPillsContainer">
+                    <button class="filter-btn active" onclick="setFilter('all', this)">All Kits</button>
+                    <button class="filter-btn" onclick="setFilter('Next.js', this)">Next.js</button>
+                    <button class="filter-btn" onclick="setFilter('FastAPI', this)">FastAPI</button>
+                    <button class="filter-btn" onclick="setFilter('Laravel', this)">Laravel</button>
+                    <button class="filter-btn" onclick="setFilter('SvelteKit', this)">SvelteKit</button>
+                </div>
+            </div>
+        </div>
+    </header>
+<!-- Main Product Directory Grid -->
+<main class="container pb-5">
+    <div class="row g-4" id="directoryGrid">
+        <!-- Rendered dynamically by JavaScript in Part 3 -->
+    </div>
+</main>
+
+<!-- Inspection Modal -->
+<div class="modal fade" id="inspectModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content p-4">
+            <div class="modal-header border-0 p-0 mb-3">
+                <h5 class="modal-title fw-bold fs-4 text-white" id="modalTitle">Kit Details</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0 mb-4">
+                <p class="small mb-3" id="modalDesc" style="color: #94a3b8; line-height: 1.6;"></p>
+                <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 14px;">
+                    <small style="color: #00f2fe; display: block; margin-bottom: 6px;"><i class="fa-solid fa-check me-1"></i> Pre-configured Auth & Database</small>
+                    <small style="color: #00f2fe; display: block; margin-bottom: 6px;"><i class="fa-solid fa-check me-1"></i> Stripe / LemonSqueezy Checkout</small>
+                    <small style="color: #00f2fe; display: block;"><i class="fa-solid fa-check me-1"></i> Production-Ready UI Components</small>
+                </div>
+            </div>
+            <div class="modal-footer border-0 p-0">
+                <a href="#" id="modalBtnLink" target="_blank" class="btn btn-inspect w-100 py-2.5">
+                    Get Starter Kit &rarr;
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Submit Listing Modal -->
+<div class="modal fade" id="submitModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content p-4">
+            <div class="modal-header border-0 p-0 mb-3">
+                <h5 class="modal-title fw-bold fs-4 text-white">Submit Starter Kit</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0 mb-3">
+                <div class="mb-3">
+                    <label class="form-label small text-secondary">Boilerplate Name</label>
+                    <input type="text" class="form-control search-bar" placeholder="e.g. ShipFast">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small text-secondary">Primary Framework</label>
+                    <select class="form-select search-bar">
+                        <option>Next.js</option>
+                        <option>FastAPI</option>
+                        <option>Laravel</option>
+                        <option>SvelteKit</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small text-secondary">Repository or Sales URL</label>
+                    <input type="url" class="form-control search-bar" placeholder="https://shipfa.st">
+                </div>
+            </div>
+            <div class="modal-footer border-0 p-0">
+                <button class="btn btn-inspect w-100 py-2.5" onclick="alert('Submission received! Your kit will be reviewed within 24 hours.');" data-bs-dismiss="modal">
+                    Submit Listing
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Bootstrap 5 Bundle JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Application Engine -->
+<script>
+    const boilerplates = [
+        {
+            id: "shipfast",
+            name: "ShipFast",
+            framework: "Next.js",
+            rating: "4.9",
+            reviews: "1,420",
+            price: "$199",
+            description: "The premier Next.js starter kit. Build your SaaS in days with pre-built Auth, Stripe billing, Tailwind components, and SEO optimization.",
+            tags: ["Stripe", "MongoDB", "Tailwind", "NextAuth"],
+            link: "https://shipfa.st",
+            tagline: "🔥 Best Seller",
+            featured: true
+        },
+        {
+            id: "pysaas",
+            name: "PySaaS Enterprise",
+            framework: "FastAPI",
+            rating: "4.8",
+            reviews: "380",
+            price: "Free",
+            description: "High-performance async Python backend template built with SQLAlchemy 2.0, PostgreSQL, Docker containerization, and JWT Auth.",
+            tags: ["Python", "PostgreSQL", "Docker", "JWT Auth"],
+            link: "https://github.com",
+            tagline: "⚡ Open Source",
+            featured: false
+        },
+        {
+            id: "larafast",
+            name: "Larafast",
+            framework: "Laravel",
+            rating: "4.9",
+            reviews: "650",
+            price: "$149",
+            description: "Complete TALL stack kit (Tailwind, Alpine, Livewire, Laravel) featuring automated subscription billing & Filament Admin Dashboard.",
+            tags: ["Laravel", "Livewire", "Stripe", "AlpineJS"],
+            link: "https://larafast.com",
+            tagline: "⭐ Popular",
+            featured: true
+        },
+        {
+            id: "sveltelaunch",
+            name: "SvelteLaunch",
+            framework: "SvelteKit",
+            rating: "4.7",
+            reviews: "210",
+            price: "$79",
+            description: "Lightning-fast SvelteKit architecture integrated directly with Supabase Database, Auth, Storage, and Stripe Payments.",
+            tags: ["SvelteKit", "Supabase", "TypeScript", "Stripe"],
+            link: "https://supastarter.dev",
+            tagline: "🚀 Lightweight",
+            featured: false
+        }
+    ];
+
+    let activeFilter = 'all';
+    let favorites = JSON.parse(localStorage.getItem('saasforge_favs') || '[]');
+    let showFavsOnly = false;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        updateFavUI();
+        renderDirectory();
+    });
+
+    function renderDirectory() {
+        const grid = document.getElementById('directoryGrid');
+        const searchVal = document.getElementById('searchInput').value.toLowerCase();
+        
+        grid.innerHTML = '';
+
+        const filteredKits = boilerplates.filter(kit => {
+            const matchesFilter = activeFilter === 'all' || kit.framework.toLowerCase() === activeFilter.toLowerCase();
+            const matchesSearch = kit.name.toLowerCase().includes(searchVal) || 
+                                  kit.description.toLowerCase().includes(searchVal) || 
+                                  kit.tags.some(t => t.toLowerCase().includes(searchVal));
+            const matchesFavs = !showFavsOnly || favorites.includes(kit.id);
+            return matchesFilter && matchesSearch && matchesFavs;
+        });
+
+        if (filteredKits.length === 0) {
+            grid.innerHTML = `<div class="col-12 text-center text-muted py-5 fs-6">No starter kits found matching your search.</div>`;
+            return;
+        }
+
+        filteredKits.forEach((kit, index) => {
+            const isFav = favorites.includes(kit.id);
+            const cardHTML = `
+                <div class="col-md-6 col-lg-4" style="animation-delay: ${index * 0.08}s;">
+                    <div class="dir-card">
+                        <div>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span style="background: rgba(0, 242, 254, 0.12); color: #00f2fe; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; border: 1px solid rgba(0, 242, 254, 0.25);">${kit.framework}</span>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span style="color: #fbbf24; font-size: 0.8rem; font-weight: 700;">
+                                        ⭐ ${kit.rating} <span style="color: #9ca3af; font-weight: 400;">(${kit.reviews})</span>
+                                    </span>
+                                    <button class="btn btn-link p-0 border-0" style="color: ${isFav ? '#ef4444' : '#64748b'}; text-decoration: none;" onclick="toggleFav('${kit.id}')">
+                                        ${isFav ? '❤️' : '🤍'}
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <h3 class="fw-bold text-white mb-0" style="font-size: 1.2rem;">${kit.name}</h3>
+                                ${kit.tagline ? `<span style="background: rgba(255, 255, 255, 0.08); color: #e5e7eb; font-size: 0.65rem; padding: 3px 8px; border-radius: 6px; font-weight: 600;">${kit.tagline}</span>` : ''}
+                            </div>
+
+                            <p class="small mb-3" style="color: #94a3b8; font-size: 0.85rem; line-height: 1.5;">${kit.description}</p>
+                            
+                            <div class="mb-4">
+                                ${kit.tags.map(tag => `<span class="badge-tech">${tag}</span>`).join('')}
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center justify-content-between pt-3" style="border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                            <div>
+                                <span class="d-block" style="color: #6b7280; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.5px;">PRICE</span>
+                                <span class="fw-bold text-white" style="font-size: 1.15rem;">${kit.price}</span>
+                            </div>
+                            <button class="btn btn-inspect" onclick="openKitModal('${kit.name}', '${kit.description}', '${kit.link}')">
+                                Inspect Kit &rarr;
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            grid.innerHTML += cardHTML;
+        });
+    }
+
+    function setFilter(category, btn) {
+        activeFilter = category;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderDirectory();
+    }
+
+    function toggleFav(id) {
+        if (favorites.includes(id)) {
+            favorites = favorites.filter(favId => favId !== id);
+        } else {
+            favorites.push(id);
+        }
+        localStorage.setItem('saasforge_favs', JSON.stringify(favorites));
+        updateFavUI();
+        renderDirectory();
+    }
+
+    function updateFavUI() {
+        document.getElementById('favCount').innerText = favorites.length;
+    }
+
+    function toggleFavoritesOnly() {
+        showFavsOnly = !showFavsOnly;
+        const btn = document.getElementById('favToggleBtn');
+        if (showFavsOnly) {
+            btn.classList.remove('btn-outline-info');
+            btn.classList.add('btn-danger');
+        } else {
+            btn.classList.remove('btn-danger');
+            btn.classList.add('btn-outline-info');
+        }
+        renderDirectory();
+    }
+
+    function openKitModal(name, desc, url) {
+        document.getElementById('modalTitle').innerText = name;
+        document.getElementById('modalDesc').innerText = desc;
+        document.getElementById('modalBtnLink').href = url;
+        
+        const modal = new bootstrap.Modal(document.getElementById('inspectModal'));
+        modal.show();
+    }
+</script>
+</body>
+</html>
